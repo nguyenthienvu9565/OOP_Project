@@ -1,0 +1,88 @@
+{
+  "success_rate": 1,
+  "total_tasks": 2,
+  "results": [
+    {
+      "task_id": "task-1",
+      "success": true,
+      "trajectory": {
+        "final_result": "Nhiệm vụ hoàn thành dựa trên dữ liệu: Kết quả tìm kiếm giả lập cho: Thông tin tìm kiếm",
+        "total_latency_ms": 0.006084,
+        "total_tokens": 47,
+        "steps": [
+          {
+            "type": "THOUGHT",
+            "content": "LLM phân tích task: Tìm kiếm giá cổ phiếu Anthropic",
+            "latency_ms": 0.001584,
+            "tokens": 14
+          },
+          {
+            "type": "ACTION",
+            "content": "Gọi công cụ WebSearch với input 'Thông tin tìm kiếm'",
+            "latency_ms": 0.004208,
+            "tokens": 14
+          },
+          {
+            "type": "OBSERVATION",
+            "content": "Nhận kết quả: Kết quả tìm kiếm giả lập cho: Thông tin tìm kiếm",
+            "latency_ms": 0.000292,
+            "tokens": 19
+          }
+        ]
+      },
+      "evaluations": [
+        {
+          "evaluator": "KeywordEvaluator",
+          "passed": true,
+          "details": "Required ALL of: hoàn thành, dữ liệu | found: 2/2"
+        },
+        {
+          "evaluator": "HasAtLeastOneAction",
+          "passed": true,
+          "details": "check function returned true"
+        }
+      ]
+    },
+    {
+      "task_id": "task-2",
+      "success": true,
+      "trajectory": {
+        "final_result": "Nhiệm vụ hoàn thành dựa trên dữ liệu: Kết quả tìm kiếm giả lập cho: Thông tin tìm kiếm",
+        "total_latency_ms": 0.004335,
+        "total_tokens": 47,
+        "steps": [
+          {
+            "type": "THOUGHT",
+            "content": "LLM phân tích task: Tìm kiếm thời tiết hôm nay",
+            "latency_ms": 0.001334,
+            "tokens": 14
+          },
+          {
+            "type": "ACTION",
+            "content": "Gọi công cụ WebSearch với input 'Thông tin tìm kiếm'",
+            "latency_ms": 0.002917,
+            "tokens": 14
+          },
+          {
+            "type": "OBSERVATION",
+            "content": "Nhận kết quả: Kết quả tìm kiếm giả lập cho: Thông tin tìm kiếm",
+            "latency_ms": 8.4e-05,
+            "tokens": 19
+          }
+        ]
+      },
+      "evaluations": [
+        {
+          "evaluator": "KeywordEvaluator",
+          "passed": true,
+          "details": "Required ALL of: hoàn thành, dữ liệu | found: 2/2"
+        },
+        {
+          "evaluator": "HasAtLeastOneAction",
+          "passed": true,
+          "details": "check function returned true"
+        }
+      ]
+    }
+  ]
+}
