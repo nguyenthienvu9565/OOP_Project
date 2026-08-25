@@ -5,7 +5,7 @@
 #include <optional>
 #include <filesystem>
 #include <functional>
-#include <expected> // C++23
+#include <expected>
 #include <cstdint>
 
 namespace fs = std::filesystem;
