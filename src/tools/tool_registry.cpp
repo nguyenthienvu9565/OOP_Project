@@ -101,3 +101,50 @@ std::string ToolRegistry::getToolsJSONSchema() const {
     }
     return oss.str();
 }
+
+// ============================================================
+// FACTORY FUNCTION - createDefaultRegistry()
+// ============================================================
+// Include các file tool trực tiếp (mỗi .cpp tự chứa cả class definition
+// lẫn implementation — đây là pattern nhất quán toàn dự án)
+#include "exec_tool.cpp"
+#include "file_tool.cpp"
+#include "web_tool.cpp"
+#include "memory_tool.cpp"
+// 4 tool moi mo rong (tham khao Hermes-2-Pro / OpenBMB ToolBench)
+#include "datetime_tool.cpp"
+#include "fetch_url_tool.cpp"
+#include "weather_tool.cpp"
+#include "regex_search_tool.cpp"
+
+/**
+ * @brief Tao va tra ve mot ToolRegistry da duoc nap san toan bo tool.
+ *
+ * Ham factory nay tap trung toan bo viec khoi tao tool vao mot cho.
+ * AgentLoop hay bat ky thanh phan nao can dung tool chi can goi:
+ *   auto registry = createDefaultRegistry();
+ *
+ * Thiet ke nay tuan thu nguyen tac Dependency Injection (DI):
+ * AgentLoop nhan registry qua constructor thay vi tu tao ben trong —
+ * giup de test, de swap tool khi can (vi du: dung MockTool trong test).
+ *
+ * @return std::unique_ptr<ToolRegistry> Registry da co du tool, ready to use
+ */
+std::unique_ptr<ToolRegistry> createDefaultRegistry() {
+    auto registry = std::make_unique<ToolRegistry>();
+
+    // --- Tool goc cua du an ---
+    registry->registerTool(std::make_unique<ExecTool>());
+    registry->registerTool(std::make_unique<WebSearchTool>());
+    registry->registerTool(std::make_unique<MemorySaveTool>());
+    registry->registerTool(std::make_unique<MemorySearchTool>());
+
+    // --- 4 Tool moi mo rong (tham khao Hermes-2-Pro / OpenBMB ToolBench) ---
+    registry->registerTool(std::make_unique<DateTimeTool>());      // get_datetime
+    registry->registerTool(std::make_unique<FetchUrlTool>());      // fetch_url
+    registry->registerTool(std::make_unique<WeatherTool>());       // get_weather
+    registry->registerTool(std::make_unique<RegexSearchTool>());   // regex_search
+
+    return registry;
+}
+
