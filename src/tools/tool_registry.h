@@ -51,17 +51,4 @@ private:
     // Kiểm tra xem Tool có được phép chạy dựa trên Policy hiện tại hay không
     bool isToolAllowed(const std::string& name) const;
 };
-
-// ============================================================
-// FACTORY FUNCTION
-// ============================================================
-// Tao mot ToolRegistry da duoc nap san toan bo tool cua he thong.
-// Bao gom cac tool goc + 4 tool mo rong moi:
-//   exec, file_read, file_write, web_search, memory_save, memory_search,
-//   get_datetime, fetch_url, get_weather, regex_search
-//
-// Su dung:
-//   auto registry = createDefaultRegistry();
-//   std::string result = registry->executeTool("get_datetime", "date");
-std::unique_ptr<ToolRegistry> createDefaultRegistry();
 
