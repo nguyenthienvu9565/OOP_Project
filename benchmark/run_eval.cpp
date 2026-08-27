@@ -141,20 +141,24 @@ int main() {
 
         cout << "   -> [OK] Da dang ky Evaluators.\n";
 
-        // Load tasks tu tasks.json trong thu muc benchmark
+        // Load tasks tu tasks.json
         vector<Task> tasks;
-        try {
+        const std::vector<std::string> search_paths = {
+            "tasks.json",
+            "benchmark/tasks.json",
+            "../benchmark/tasks.json",
+            "../tasks.json"
+        };
+        bool loaded = false;
+        for (const auto& p : search_paths) {
             try {
-                tasks = HarnessRunner::loadTasksFromJson("tasks.json");
-            } catch (...) {
-                try {
-                    tasks = HarnessRunner::loadTasksFromJson("benchmark/tasks.json");
-                } catch (...) {
-                    tasks = HarnessRunner::loadTasksFromJson("../tasks.json");
-                }
-            }
-            cout << "   -> [OK] Da nap " << tasks.size() << " tasks tu tasks.json\n";
-        } catch (...) {
+                tasks = HarnessRunner::loadTasksFromJson(p);
+                loaded = true;
+                cout << "   -> [OK] Da nap " << tasks.size() << " tasks tu: " << p << "\n";
+                break;
+            } catch (...) {}
+        }
+        if (!loaded) {
             cout << "   -> [WARN] Khong tim thay tasks.json, dung danh sach task fallback.\n";
             tasks = {
                 {"task_calc_01", "Calculate 15 * 17", {"255"}},
