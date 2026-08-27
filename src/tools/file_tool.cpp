@@ -1,6 +1,7 @@
 #pragma once
 
 #include "tool.h"
+#include "tool_definition.h"
 #include <string>
 #include <fstream>
 #include <sstream>
@@ -10,39 +11,6 @@
 
 using json = nlohmann::json;
 namespace fs = std::filesystem;
-
-/**
- * @brief Tool hỗ trợ LLM đọc nội dung từ một file.
- * Tên đăng ký: "read_file"
- */
-class ReadFileTool : public Tool {
-public:
-    ReadFileTool();
-    
-    /**
-     * @brief Thực thi việc đọc file.
-     * @param arguments Đường dẫn đến file (chuỗi thuần túy hoặc JSON dạng {"path": "..."})
-     * @return Nội dung file nếu thành công, hoặc chuỗi thông báo lỗi bắt đầu bằng "Error:"
-     */
-    std::string execute(const std::string& arguments) override;
-};
-
-/**
- * @brief Tool hỗ trợ LLM ghi nội dung vào một file.
- * Tên đăng ký: "write_file"
- */
-class WriteFileTool : public Tool {
-public:
-    WriteFileTool();
-    
-    /**
-     * @brief Thực thi việc ghi file.
-     * @param arguments Chuỗi định dạng JSON chứa đường dẫn và nội dung cần ghi:
-     * e.g., {"path": "result.txt", "content": "Dữ liệu cần ghi"}
-     * @return Thông báo trạng thái thành công hoặc thông báo lỗi.
-     */
-    std::string execute(const std::string& arguments) override;
-};
 
 // ==========================================
 // TRIỂN KHAI LỚP READ_FILE_TOOL
