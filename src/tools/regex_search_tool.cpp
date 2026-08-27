@@ -1,37 +1,11 @@
 ﻿#pragma once
 
 #include "tool.h"
+#include "tool_definition.h"
 #include <regex>
 #include <sstream>
 #include <string>
 #include <vector>
-
-/**
- * @brief Tool ho tro LLM tim kiem va trich xuat van ban bang bieu thuc chinh quy (Regex).
- * Ten dang ky: "regex_search"
- */
-class RegexSearchTool : public Tool {
-public:
-    RegexSearchTool();
-    ~RegexSearchTool() override = default;
-
-    /**
-     * @brief Thuc thi viec tim kiem theo bieu thuc chinh quy.
-     * @param arguments Chuoi dinh dang "<pattern>|<text>" phan cach boi dau '|'
-     * @return Danh sach cac chuoi con thoa man bieu thuc chinh quy.
-     */
-    std::string execute(const std::string& arguments) override;
-
-private:
-    // Tach chuoi tham so dau vao thanh pattern va text de tim kiem
-    static bool parseArguments(const std::string& input,
-                                std::string& pattern,
-                                std::string& text);
-
-    // Tim kiem tat ca ket qua phu hop voi bieu thuc chinh quy
-    static std::vector<std::string> findAllMatches(const std::string& pattern,
-                                                    const std::string& text);
-};
 
 // ==========================================
 // TRIEN KHAI LOP REGEXSEARCHTOOL

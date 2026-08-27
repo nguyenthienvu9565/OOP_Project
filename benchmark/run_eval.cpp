@@ -46,6 +46,10 @@ int main() {
         tool_registry.registerTool(make_unique<WebSearchTool>());
         tool_registry.registerTool(make_unique<MemorySearchTool>());
         tool_registry.registerTool(make_unique<MemorySaveTool>());
+        tool_registry.registerTool(make_unique<DateTimeTool>());
+        tool_registry.registerTool(make_unique<FetchUrlTool>());
+        tool_registry.registerTool(make_unique<RegexSearchTool>());
+        tool_registry.registerTool(make_unique<WeatherTool>());
         
         cout << "   -> [OK] So luong tool hien co: " << tool_registry.getAllToolNames().size() << "\n";
         cout << "-------------------------------------------\n";

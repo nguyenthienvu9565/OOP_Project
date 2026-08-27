@@ -1,33 +1,13 @@
 ﻿#pragma once
 
 #include "tool.h"
+#include "tool_definition.h"
 #include <chrono>
 #include <ctime>
 #include <iomanip>
 #include <sstream>
 #include <string>
 #include <cctype>
-
-/**
- * @brief Tool ho tro LLM lay ngay gio hien tai cua he thong.
- * Ten dang ky: "get_datetime"
- */
-class DateTimeTool : public Tool {
-public:
-    DateTimeTool();
-    ~DateTimeTool() override = default;
-
-    /**
-     * @brief Thuc thi viec lay ngay gio.
-     * @param arguments Dinh dang mong muon ("full", "date", "time", "iso")
-     * @return Chuoi ngay gio he thong da dinh dang.
-     */
-    std::string execute(const std::string& arguments) override;
-
-private:
-    // Lay thoi gian cuc bo he thong (an toan da luong)
-    static std::tm getLocalTime();
-};
 
 // ==========================================
 // TRIEN KHAI LOP DATETIMETOOL

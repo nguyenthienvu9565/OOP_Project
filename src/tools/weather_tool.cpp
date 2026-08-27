@@ -1,33 +1,10 @@
 ﻿#pragma once
 
 #include "tool.h"
+#include "tool_definition.h"
 #include <curl/curl.h>
 #include <string>
 #include <sstream>
-
-/**
- * @brief Tool ho tro LLM tra cuu thoi tiet hien tai cua mot thanh pho.
- * Ten dang ky: "get_weather"
- */
-class WeatherTool : public Tool {
-public:
-    WeatherTool();
-    ~WeatherTool() override = default;
-
-    /**
-     * @brief Thuc thi viec tra cuu thoi tiet.
-     * @param arguments Ten thanh pho khong dau (e.g. "Hanoi", "HoChiMinh")
-     * @return Chuoi mo ta thoi tiet hien tai.
-     */
-    std::string execute(const std::string& arguments) override;
-
-private:
-    // Callback cua libcurl de ghi du lieu
-    static size_t writeCallback(char* ptr, size_t size, size_t nmemb, void* userdata);
-
-    // Ma hoa ten thanh pho de dua vao URL
-    static std::string urlEncode(CURL* curl, const std::string& text);
-};
 
 // ==========================================
 // TRIEN KHAI LOP WEATHERTOOL
