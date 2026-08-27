@@ -1,37 +1,11 @@
 ﻿#pragma once
 
 #include "tool.h"
+#include "tool_definition.h"
 #include <curl/curl.h>
 #include <string>
 #include <sstream>
 #include <algorithm>
-
-/**
- * @brief Tool ho tro LLM trich xuat noi dung van ban tu mot URL xac dinh.
- * Ten dang ky: "fetch_url"
- */
-class FetchUrlTool : public Tool {
-public:
-    FetchUrlTool();
-    ~FetchUrlTool() override = default;
-
-    /**
-     * @brief Thuc thi viec tai va loc noi dung tu URL.
-     * @param arguments Duong dan URL (bat dau bang http:// hoac https://)
-     * @return Noi dung van ban thuan da duoc loc HTML.
-     */
-    std::string execute(const std::string& arguments) override;
-
-private:
-    // Callback cua libcurl de ghi du lieu vao string buffer
-    static size_t writeCallback(char* ptr, size_t size, size_t nmemb, void* userdata);
-
-    // Loc bo tag HTML, chi giu lai van ban thuan tuy
-    static std::string stripHtmlTags(const std::string& html);
-
-    // Gioi han do dai ket qua de tranh day token cua LLM
-    static std::string truncate(const std::string& text, size_t maxLen);
-};
 
 // ==========================================
 // TRIEN KHAI LOP FETCHURLTOOL
