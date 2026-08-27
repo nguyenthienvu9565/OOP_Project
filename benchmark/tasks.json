@@ -1,0 +1,17 @@
+[
+  {
+    "id": "task_calc_01",
+    "prompt": "Calculate 15 * 17",
+    "keywords": ["255"]
+  },
+  {
+    "id": "task_datetime_02",
+    "prompt": "Get current date and time",
+    "keywords": ["date", "time"]
+  },
+  {
+    "id": "task_weather_03",
+    "prompt": "Check current weather in Hanoi",
+    "keywords": ["Hanoi", "weather"]
+  }
+]

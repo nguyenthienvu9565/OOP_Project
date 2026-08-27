@@ -1,0 +1,22 @@
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Build artifacts and binaries
+build/
+bin/
+*.o
+*.out
+run_eval_bin
+benchmark/run_eval_bin
+
+# Runtime generated data
+*.db
+benchmark/*.db
+eval_results.json
+benchmark/eval_results.json
