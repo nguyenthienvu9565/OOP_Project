@@ -1,27 +1,9 @@
 #include "tool.h"
+#include "tool_definition.h"
 #include <string>
 #include <memory>
 #include <array>
 #include <cstdio>
-
-// --- PHẦN KHAI BÁO (Từ exec_tool.h) ---
-
-// Lớp ExecTool kế thừa public từ lớp trừu tượng Tool
-class ExecTool : public Tool {
-public:
-    // Hàm khởi tạo (Constructor): Định nghĩa tên và mô tả của công cụ
-    ExecTool();
-
-    // Hàm hủy (Destructor): Đánh dấu override từ lớp cha
-    ~ExecTool() override = default;
-
-    /**
-     * @brief Thực thi một câu lệnh shell Linux ngầm và trả về kết quả.
-     * @param arguments Chuỗi lệnh cần chạy (Ví dụ: "ls -la", "pwd")
-     * @return std::string Kết quả đầu ra (stdout/stderr) hoặc thông báo lỗi
-     */
-    std::string execute(const std::string& arguments) override;
-};
 
 // --- PHẦN ĐỊNH NGHĨA (Từ exec_tool.cpp) ---
 

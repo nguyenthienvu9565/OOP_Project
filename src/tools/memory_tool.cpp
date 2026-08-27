@@ -1,40 +1,11 @@
 #pragma once
 
 #include "tool.h"
+#include "tool_definition.h"
 #include <sqlite3.h>
 #include <string>
 #include <iostream>
 #include <sstream>
-
-class SQLiteManager {
-protected:
-    std::string dbPath;
-    sqlite3* db = nullptr;
-
-    bool openDatabase();
-    void closeDatabase();
-    bool createTable();
-
-public:
-    explicit SQLiteManager(std::string_view databasePath);
-    virtual ~SQLiteManager();
-};
-
-class MemorySaveTool : public Tool, public SQLiteManager {
-public:
-    explicit MemorySaveTool(std::string_view databasePath = "agent_memory.db");
-    ~MemorySaveTool() override = default;
-
-    std::string execute(const std::string& arguments) override;
-};
-
-class MemorySearchTool : public Tool, public SQLiteManager {
-public:
-    explicit MemorySearchTool(std::string_view databasePath = "agent_memory.db");
-    ~MemorySearchTool() override = default;
-
-    std::string execute(const std::string& arguments) override;
-};
 
 // ==========================================
 // TRIỂN KHAI SQLiteManager

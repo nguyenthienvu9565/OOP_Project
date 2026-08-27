@@ -1,6 +1,7 @@
 #pragma once
 
 #include "tool.h"
+#include "tool_definition.h"
 #include <string>
 #include <stack>
 #include <cctype>
@@ -8,36 +9,9 @@
 #include <stdexcept>
 #include <iomanip>
 #include <iostream>
-#include <nlohmann/json.hpp> 
+#include <nlohmann/json.hpp>
 
 using json = nlohmann::json;
-
-/**
- * @brief Tool hỗ trợ LLM tính toán biểu thức số học.
- * Sử dụng cấu trúc dữ liệu Stack để phân tích toán học (Shunting-yard algorithm).
- * Tên đăng ký: "calculator"
- */
-class CalculatorTool : public Tool {
-private:
-    // Các hàm trợ giúp xử lý toán học (DSA)
-    int getPrecedence(char op);
-    bool isOperator(char c);
-    double applyOp(double a, double b, char op);
-    
-    // Hàm cốt lõi: Nhận chuỗi biểu thức thô và tính toán ra kết quả kiểu double
-    double evaluateExpression(const std::string& tokens);
-
-public:
-    CalculatorTool();
-    ~CalculatorTool() override = default;
-
-    /**
-     * @brief Thực thi việc tính toán.
-     * @param arguments Biểu thức toán học (chuỗi thuần hoặc JSON dạng {"expression": "..."})
-     * @return Kết quả tính toán dưới dạng chuỗi, hoặc thông báo lỗi nếu biểu thức sai cú pháp.
-     */
-    std::string execute(const std::string& arguments) override;
-};
 
 CalculatorTool::CalculatorTool()
     : Tool("calculator", 

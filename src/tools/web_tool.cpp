@@ -1,48 +1,13 @@
 #pragma once
 
 #include "tool.h"
+#include "tool_definition.h"
 #include <string>
 #include <sstream>
 #include <curl/curl.h>
 #include <nlohmann/json.hpp>
 
 using json = nlohmann::json;
-
-/**
- * @brief Tool hỗ trợ LLM tìm kiếm thông tin trên Internet.
- * Tên đăng ký: "web_search"
- *
- * Dùng DuckDuckGo Instant Answer API vì:
- *   - Không cần API key (khác Google/Bing yêu cầu đăng ký)
- *   - Trả về JSON dễ parse
- *   - Đủ dùng cho demo và benchmark của đồ án
- *
- * Nếu muốn dùng SearXNG thay thế (theo đề bài cho phép "SearXNG hoặc
- * DuckDuckGo"), chỉ cần đổi lại build_url() và parse_response() bên dưới,
- * phần còn lại (libcurl request/response) giữ nguyên.
- */
-class WebSearchTool : public Tool {
-public:
-    WebSearchTool();
-
-    /**
-     * @brief Thực thi tìm kiếm web.
-     * @param arguments Chuỗi truy vấn thuần túy, ví dụ: "capital of Vietnam"
-     * @return Tóm tắt kết quả tìm kiếm, hoặc "Error: ..." nếu thất bại
-     */
-    std::string execute(const std::string& arguments) override;
-
-private:
-    // Callback bắt buộc của libcurl — libcurl gọi hàm này nhiều lần để
-    // ghi dữ liệu HTTP response vào buffer của chúng ta.
-    static size_t write_callback(char* ptr, size_t size, size_t nmemb, void* userdata);
-
-    // Tách riêng phần dựng URL để dễ đọc và dễ test độc lập
-    std::string build_url(CURL* curl, const std::string& query) const;
-
-    // Tách riêng phần parse JSON response thành text dễ đọc cho LLM
-    std::string parse_response(const std::string& raw_json) const;
-};
 
 // ==========================================
 // TRIỂN KHAI LỚP WEBSEARCH_TOOL
