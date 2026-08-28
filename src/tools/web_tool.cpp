@@ -1,5 +1,3 @@
-#pragma once
-
 #include "tool.h"
 #include "tool_definition.h"
 #include <string>
