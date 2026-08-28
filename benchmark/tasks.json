@@ -1,17 +1,104 @@
 [
   {
-    "id": "task_calc_01",
+    "id": "task_easy_01",
     "prompt": "Calculate 15 * 17",
-    "keywords": ["255"]
+    "description": "Calculate 15 * 17",
+    "instruction": "Calculate 15 * 17",
+    "eval_type": "keyword",
+    "keywords": [
+      "255"
+    ],
+    "max_steps": 5
   },
   {
-    "id": "task_datetime_02",
-    "prompt": "Get current date and time",
-    "keywords": ["date", "time"]
+    "id": "task_easy_02",
+    "prompt": "Get the current date and time",
+    "description": "Get current date and time",
+    "instruction": "Get the current date and time",
+    "eval_type": "keyword",
+    "keywords": [
+      "date",
+      "time"
+    ],
+    "max_steps": 5
   },
   {
-    "id": "task_weather_03",
+    "id": "task_easy_03",
     "prompt": "Check current weather in Hanoi",
-    "keywords": ["Hanoi", "weather"]
+    "description": "Check current weather in Hanoi",
+    "instruction": "Check current weather in Hanoi",
+    "eval_type": "keyword",
+    "keywords": [
+      "Hanoi",
+      "weather"
+    ],
+    "max_steps": 5
+  },
+  {
+    "id": "task_easy_04",
+    "prompt": "Search the web for 'C++17 features'",
+    "description": "Search web for C++17 features",
+    "instruction": "Search the web for 'C++17 features'",
+    "eval_type": "keyword",
+    "keywords": [
+      "std::variant",
+      "std::optional",
+      "filesystem"
+    ],
+    "max_steps": 5
+  },
+  {
+    "id": "task_med_01",
+    "prompt": "Calculate 15 * 17 and save the result to file result.txt",
+    "description": "Calculate 15 * 17 and save to result.txt",
+    "instruction": "Calculate 15 * 17 and save the result to file result.txt",
+    "eval_type": "functional",
+    "eval_script": "test -f result.txt && grep 255 result.txt && echo PASS",
+    "max_steps": 10
+  },
+  {
+    "id": "task_med_02",
+    "prompt": "Check the current weather in Hanoi and save the result into memory",
+    "description": "Get current weather in Hanoi and save to memory",
+    "instruction": "Check the current weather in Hanoi and save the result into memory",
+    "eval_type": "functional",
+    "eval_script": "sqlite3 agent_memory.db \"SELECT * FROM memory WHERE content LIKE '%Hanoi%weather%';\" && echo PASS",
+    "max_steps": 10
+  },
+  {
+    "id": "task_med_03",
+    "prompt": "Search the web for 'C++17 features' and save the search result into cpp17.txt",
+    "description": "Search for C++17 features and save to cpp17.txt",
+    "instruction": "Search the web for 'C++17 features' and save the search result into cpp17.txt",
+    "eval_type": "functional",
+    "eval_script": "test -f cpp17.txt && echo PASS",
+    "max_steps": 10
+  },
+  {
+    "id": "task_med_04",
+    "prompt": "Read the content of text.txt and use regex to find all dates in format YYYY-MM-DD",
+    "description": "Read text.txt and extract dates using regex",
+    "instruction": "Read the content of text.txt and use regex to find all dates in format YYYY-MM-DD",
+    "eval_type": "functional",
+    "eval_script": "echo PASS",
+    "max_steps": 10
+  },
+  {
+    "id": "task_hard_01",
+    "prompt": "Fetch the content of https://example.com, extract the main text, summarize it by taking the first sentence, and write it to summary.txt",
+    "description": "Fetch URL, extract text, summarize, and save to summary.txt",
+    "instruction": "Fetch the content of https://example.com, extract the main text, summarize it by taking the first sentence, and write it to summary.txt",
+    "eval_type": "functional",
+    "eval_script": "test -f summary.txt && echo PASS",
+    "max_steps": 15
+  },
+  {
+    "id": "task_hard_02",
+    "prompt": "Search memory for 'pending calculation', calculate the expression found, and execute a shell command to echo the result.",
+    "description": "Query memory for a calculation, execute it, and echo result",
+    "instruction": "Search memory for 'pending calculation', calculate the expression found, and execute a shell command to echo the result.",
+    "eval_type": "functional",
+    "eval_script": "echo PASS",
+    "max_steps": 15
   }
 ]
