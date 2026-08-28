@@ -61,7 +61,6 @@ std::string base64Encode(const std::vector<unsigned char>& data) {
 
 // Reads a file fully into memory and base64-encodes it.
 // Returns std::nullopt on any I/O failure (missing file, permission denied, etc.)
-// rather than throwing, so callers can turn it into a normal LLMError.
 std::optional<std::string> encodeImageFile(const fs::path& path) {
     std::error_code ec;
     if (!fs::exists(path, ec) || ec) {
@@ -106,36 +105,34 @@ OllamaClient::OllamaClient(std::string url, std::string model,
       max_tokens(tokens),
       timeout_ms(timeout_milliseconds) {}
 
-std::expected<std::string, LLMError> OllamaClient::buildPayload(const PromptType& prompt) const {
+std::optional<std::string> OllamaClient::buildPayload(const PromptType& prompt) const {
     if (model_name.empty()) {
-        return std::unexpected(LLMError{LLMErrorKind::InvalidArgument, "model name is empty."});
+        if (log_hook) log_hook("Error: model name is empty.");
+        return std::nullopt;
     }
 
-    // Ollama's /api/chat expects a "messages" array; we always send a single
-    // user message, optionally carrying an "images" array of base64 strings.
+    // Ollama's /api/chat expects a "messages" array
     json body;
     body["model"] = model_name;
     body["stream"] = false;
 
     json options = json::object();
     if (temperature.has_value()) options["temperature"] = *temperature;
-    if (max_tokens.has_value()) options["num_predict"] = *max_tokens; // Ollama's name for max_tokens
+    if (max_tokens.has_value()) options["num_predict"] = *max_tokens; 
     if (!options.empty()) body["options"] = options;
 
     json message = json::object();
     message["role"] = "user";
 
-    // The visitor either populates `message` (success) or `build_error` (failure).
-    // We can't return directly from inside the lambda passed to std::visit, so we
-    // stash the outcome here and check it once visitation is done.
-    std::optional<LLMError> build_error;
+    bool build_error = false;
 
     std::visit([&](auto&& arg) {
         using Type = std::decay_t<decltype(arg)>;
 
         if constexpr (std::is_same_v<Type, TextPrompt>) {
             if (arg.text.empty()) {
-                build_error = LLMError{LLMErrorKind::InvalidArgument, "text prompt is empty."};
+                build_error = true;
+                if (log_hook) log_hook("Error: text prompt is empty.");
                 return;
             }
             message["content"] = arg.text;
@@ -144,29 +141,28 @@ std::expected<std::string, LLMError> OllamaClient::buildPayload(const PromptType
         else if constexpr (std::is_same_v<Type, MultimodalPrompt>) {
             auto encoded = encodeImageFile(arg.image_path);
             if (!encoded) {
-                build_error = LLMError{
-                    LLMErrorKind::InvalidArgument,
-                    "image file not found, unreadable, or empty: " + arg.image_path.string()};
+                build_error = true;
+                if (log_hook) log_hook("Error: image file not found, unreadable, or empty: " + arg.image_path.string());
                 return;
             }
-            message["content"] = arg.text; // may legitimately be empty (image-only prompt)
+            message["content"] = arg.text; 
             message["images"] = json::array({*encoded});
             if (log_hook) log_hook("Building multimodal payload (image base64-encoded)...");
         }
     }, prompt);
 
-    if (build_error.has_value()) {
-        return std::unexpected(*build_error);
+    if (build_error) {
+        return std::nullopt;
     }
 
     body["messages"] = json::array({message});
     return body.dump();
 }
 
-std::expected<std::string, LLMError> OllamaClient::chat(const PromptType& prompt) {
+std::optional<std::string> OllamaClient::chat(const PromptType& prompt) {
     auto payload = buildPayload(prompt);
     if (!payload.has_value()) {
-        return std::unexpected(payload.error());
+        return std::nullopt;
     }
 
     const std::string url = base_url + "/api/chat";
@@ -179,32 +175,16 @@ std::expected<std::string, LLMError> OllamaClient::chat(const PromptType& prompt
         cpr::Timeout{timeout_ms}
     );
 
-    // --- Transport-level errors (no HTTP status was ever received) ---
+    // --- Transport-level errors ---
     if (response.error) {
-        using cpr::ErrorCode;
-        switch (response.error.code) {
-            case ErrorCode::OPERATION_TIMEDOUT:
-                if (log_hook) log_hook("Request timed out.");
-                return std::unexpected(LLMError{
-                    LLMErrorKind::Timeout,
-                    "Request to " + url + " timed out after " + std::to_string(timeout_ms) + "ms."});
-            case ErrorCode::COULDNT_CONNECT:
-                if (log_hook) log_hook("Connection refused / host unreachable.");
-                return std::unexpected(LLMError{
-                    LLMErrorKind::ConnectionRefused,
-                    "Could not connect to Ollama server at " + base_url + ": " + response.error.message});
-            default:
-                if (log_hook) log_hook("Unknown transport error: " + response.error.message);
-                return std::unexpected(LLMError{LLMErrorKind::Unknown, response.error.message});
-        }
+        if (log_hook) log_hook("Transport error [" + std::to_string(static_cast<int>(response.error.code)) + "]: " + response.error.message);
+        return std::nullopt;
     }
 
-    // --- HTTP-level errors (server reachable but returned non-2xx) ---
+    // --- HTTP-level errors ---
     if (response.status_code < 200 || response.status_code >= 300) {
-        if (log_hook) log_hook("Server returned HTTP " + std::to_string(response.status_code));
-        return std::unexpected(LLMError{
-            LLMErrorKind::HttpError,
-            "Ollama server returned HTTP " + std::to_string(response.status_code) + ": " + response.text});
+        if (log_hook) log_hook("Server returned HTTP " + std::to_string(response.status_code) + ": " + response.text);
+        return std::nullopt;
     }
 
     // --- JSON parsing / shape validation ---
@@ -212,19 +192,14 @@ std::expected<std::string, LLMError> OllamaClient::chat(const PromptType& prompt
     try {
         parsed = json::parse(response.text);
     } catch (const json::parse_error& e) {
-        if (log_hook) log_hook("Failed to parse JSON response.");
-        return std::unexpected(LLMError{
-            LLMErrorKind::InvalidResponse,
-            std::string("Response was not valid JSON: ") + e.what()});
+        if (log_hook) log_hook(std::string("Failed to parse JSON response: ") + e.what());
+        return std::nullopt;
     }
 
-    // Ollama's /api/chat success shape: { "message": { "role": ..., "content": "..." }, ... }
     if (!parsed.contains("message") || !parsed["message"].contains("content") ||
         !parsed["message"]["content"].is_string()) {
         if (log_hook) log_hook("JSON response missing expected 'message.content' field.");
-        return std::unexpected(LLMError{
-            LLMErrorKind::InvalidResponse,
-            "Response JSON did not contain the expected 'message.content' field."});
+        return std::nullopt;
     }
 
     if (log_hook) log_hook("Response received successfully.");

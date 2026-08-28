@@ -40,4 +40,4 @@ set(PROJECT_SOURCES
 add_executable(run_eval benchmark/run_eval.cpp ${PROJECT_SOURCES})
 
 # Find and link cpr, curl, and sqlite3
-target_link_libraries(run_eval PRIVATE cpr curl sqlite3)
+target_link_libraries(run_eval PRIVATE cpr curl sqlite3 ssl crypto)

@@ -1,6 +1,4 @@
-﻿#pragma once
-
-#include "tool.h"
+﻿#include "tool.h"
 #include "tool_definition.h"
 #include <curl/curl.h>
 #include <string>

@@ -173,7 +173,7 @@ int main() {
         double success_rate = harness.calculateSuccessRate(results);
         cout << "\n=== SUCCESS RATE: " << (success_rate * 100.0) << "% ===\n";
 
-        string export_file = "eval_results.json";
+        string export_file = "../benchmark/eval_results.json";
         harness.exportToJson(results, export_file);
         cout << "   -> [OK] Ket qua evaluation da duoc export ra file: " << export_file << "\n";
 

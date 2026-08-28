@@ -5,7 +5,6 @@
 #include <optional>
 #include <filesystem>
 #include <functional>
-#include <expected>
 #include <cstdint>
 
 namespace fs = std::filesystem;
@@ -26,26 +25,6 @@ struct MultimodalPrompt {
 using PromptType = std::variant<TextPrompt, MultimodalPrompt>;
 
 // ==========================================
-// ERROR TAXONOMY
-// ==========================================
-// Distinguishing error *kind* lets callers decide whether to retry
-// (Timeout / ConnectionRefused are often retryable) or not
-// (InvalidArgument / InvalidResponse usually are not).
-enum class LLMErrorKind {
-    InvalidArgument,   // bad input before any network call (missing file, empty prompt...)
-    ConnectionRefused, // could not reach the server at all
-    Timeout,           // request exceeded the configured timeout
-    HttpError,         // server responded with a non-2xx status code
-    InvalidResponse,   // response body was not parseable / not the expected shape
-    Unknown            // anything else (kept generic on purpose)
-};
-
-struct LLMError {
-    LLMErrorKind kind;
-    std::string message;
-};
-
-// ==========================================
 // ABSTRACT INTERFACE: LLMClient
 // ==========================================
 class LLMClient {
@@ -59,8 +38,8 @@ public:
     // Registers an optional logging callback; safe to call with nullptr to disable logging.
     void setLogHook(std::function<void(const std::string&)> hook);
 
-    // std::expected (C++23): returns the model's reply OR a structured LLMError.
-    virtual std::expected<std::string, LLMError> chat(const PromptType& prompt) = 0;
+    // std::optional (C++17): returns the model's reply OR std::nullopt on failure.
+    virtual std::optional<std::string> chat(const PromptType& prompt) = 0;
 };
 
 // ==========================================
@@ -75,8 +54,8 @@ private:
     int timeout_ms; // request timeout, configurable
 
     // Builds the JSON payload for /api/chat given a resolved prompt.
-    // Returns unexpected on invalid input (e.g. missing image file).
-    std::expected<std::string, LLMError> buildPayload(const PromptType& prompt) const;
+    // Returns std::nullopt on invalid input (e.g. missing image file).
+    std::optional<std::string> buildPayload(const PromptType& prompt) const;
 
 public:
     // Constructor with sensible defaults for everything except the URL.
@@ -86,7 +65,7 @@ public:
                            std::optional<int> tokens = 2048,
                            int timeout_milliseconds = 30000);
 
-    std::expected<std::string, LLMError> chat(const PromptType& prompt) override;
+    std::optional<std::string> chat(const PromptType& prompt) override;
 
     // Simple configuration accessors (useful for tests / debugging).
     const std::string& baseUrl() const { return base_url; }
