@@ -72,7 +72,7 @@ int main() {
         agent::ToolExecuteFn tool_fn = [&tool_registry](const string& name, const string& args) {
             return tool_registry.executeTool(name, args);
         };
-
+/*
         agent::LLMChatFn llm_fn = [llm_client](const vector<agent::Message>& history) {
             agent::LLMResponse response;
             string full_prompt;
@@ -100,6 +100,27 @@ int main() {
             }
             return response;
         };
+*/
+        agent::LLMChatFn llm_fn = [llm_client](const vector<agent::Message>& history) {
+            agent::LLMResponse response;
+            string full_prompt;
+            for (const auto& msg : history) {
+                full_prompt += msg.role + ": " + msg.content + "\n";
+            }
+            TextPrompt prompt{full_prompt};
+            auto result = llm_client->chat(prompt);
+            
+            // Bắt lỗi khắt khe: Không có mạng hoặc model sập -> Thất bại ngay lập tức
+            if (!result.has_value()) {
+                response.success = false;
+                response.content = "SYSTEM_ERROR: Khong the ket noi den Ollama server.";
+                return response; 
+            } 
+            
+            response.success = true;
+            response.content = result.value();
+            return response;
+        };        
 
         agent::SystemPromptFn prompt_fn = [&skill_loader](const string& extra) {
             string base_prompt = "You are a helpful AI Agent.\n";
