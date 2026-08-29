@@ -72,35 +72,6 @@ int main() {
         agent::ToolExecuteFn tool_fn = [&tool_registry](const string& name, const string& args) {
             return tool_registry.executeTool(name, args);
         };
-/*
-        agent::LLMChatFn llm_fn = [llm_client](const vector<agent::Message>& history) {
-            agent::LLMResponse response;
-            string full_prompt;
-            for (const auto& msg : history) {
-                full_prompt += msg.role + ": " + msg.content + "\n";
-            }
-            TextPrompt prompt{full_prompt};
-            auto result = llm_client->chat(prompt);
-            
-            if (result.has_value()) {
-                response.success = true;
-                response.content = result.value();
-            } else {
-                // Standin mock fallback if Ollama server is offline
-                response.success = true;
-                if (full_prompt.find("15 * 17") != string::npos || full_prompt.find("task_calc") != string::npos) {
-                    response.content = "TOOL_CALL: Calculator(15 * 17)\nFINAL_ANSWER: 255";
-                } else if (full_prompt.find("date") != string::npos || full_prompt.find("datetime") != string::npos) {
-                    response.content = "TOOL_CALL: DateTime()\nFINAL_ANSWER: Current date and time retrieved";
-                } else if (full_prompt.find("weather") != string::npos) {
-                    response.content = "TOOL_CALL: Weather(Hanoi)\nFINAL_ANSWER: Current weather in Hanoi is sunny";
-                } else {
-                    response.content = "FINAL_ANSWER: Task executed successfully";
-                }
-            }
-            return response;
-        };
-*/
         agent::LLMChatFn llm_fn = [llm_client](const vector<agent::Message>& history) {
             agent::LLMResponse response;
             string full_prompt;

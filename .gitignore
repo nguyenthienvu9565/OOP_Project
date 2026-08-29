@@ -18,5 +18,3 @@ benchmark/run_eval_bin
 # Runtime generated data
 *.db
 benchmark/*.db
-eval_results.json
-benchmark/eval_results.json
